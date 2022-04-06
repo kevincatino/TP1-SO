@@ -1,9 +1,9 @@
 # TP1-SO
 
 ## Alumnos
--Banfi Malena 61008
--Catino Kevin
--Fleischer Lucas
+- Banfi Malena 61008
+- Catino Kevin
+- Fleischer Lucas
 
 
 ## SATsolver
