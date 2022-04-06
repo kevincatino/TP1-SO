@@ -7,4 +7,6 @@ int main(int argc, char* argv[]) {
     // recibo de shared memory
     char * shared = argv[1];
     
+    // imprimir por salida estandar
+    
 }
