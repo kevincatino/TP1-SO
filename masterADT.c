@@ -2,70 +2,79 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <masterADT.h>
+#include "masterADT.h"
+#include <sys/wait.h>
+
+#define MAX_SLAVE_QTY 5
+#define FILES_PER_SLAVE 2
+#define MAX_OUT_LEN 256
+#define RESULT_PATH "./results.txt"
 
 typedef struct masterCDT {
     int slave_count;
-    int m_write_pipes[SLAVE_COUNT][2];
-    int m_read_pipes[SLAVE_COUNT][2];
-    int slave_processed[SLAVE_COUNT];
+    int pids[MAX_SLAVE_QTY];
+    int write_pipes[MAX_SLAVE_QTY][2];
+    int read_pipes[MAX_SLAVE_QTY][2];
+    int slave_processed[MAX_SLAVE_QTY];
 
     int total_tasks;
     int current_task;
-    char * files[];
+    char ** files;
 
     // shmem_ADT sh_mem;
     // int sh_id;
 
-}
+} masterCDT;
 
-masterADT new_master(const char *files[], int total_tasks, int shm_id) {
-  masterADT master = calloc(1, sizeof(masterCDT));
+masterADT new_master(char **files, int total_tasks, int shm_id) {
+    masterADT master = calloc(1, sizeof(masterCDT));
+    master->slave_count = MAX_SLAVE_QTY;
 
-  if(master == NULL)
+    if(master == NULL)
     // error
 
-  master->total_tasks = total_tasks;
-  master->files = files;
+    master->total_tasks = total_tasks;
+    master->files = files;
 
   // newMaster->sh_mem = otro ADT
   // newMaster->sh_mem_id = id del shared memory;
 
-  return master;
+    return master;
 }
 
 void init_slaves(masterADT master) {
+
     int i;
     for (i = 0; i < master->slave_count; i++)
     {
-        if (pipe(master->m_read_pipes[i]) == -1) { printf("Error with creating pipe\n"); return 1; }
-        if (pipe(master->m_write_pipes[i]) == -1) { printf("Error with creating pipe\n"); return 1; }
+        if (pipe(master->read_pipes[i]) == -1) { printf("Error with creating pipe\n"); exit(1); }
+        if (pipe(master->write_pipes[i]) == -1) { printf("Error with creating pipe\n"); exit(1); }
     }
 
     for (i = 0; i < master->slave_count; i++)
     {
-        pids[i] = fork();
+        master->pids[i] = fork();
 
-        if (pids[i] == -1) { printf("Error with creating process\n"); exit(2); }
+        if (master->pids[i] == -1) { printf("Error with creating process\n"); exit(2); }
 
-        if (pids[i] == 0)
+        if (master->pids[i] == 0)
         {
             // Child
 
-            int childReadfd = appWritePipes[i][0];
-            int childWritefd = appReadPipes[i][1];
+            int childReadfd = master->write_pipes[i][0];
+            int childWritefd = master->read_pipes[i][1];
 
             int j;
-            for (j = 0; j< PROCESSES; j++) {
+            for (j = 0; j < master->slave_count; j++) {
                 if (j == i) {
-                    close(appWritePipes[j][1]);
-                    close(appReadPipes[j][0]);
+                    close(master->write_pipes[j][1]);
+                    close(master->read_pipes[j][0]);
                 }
                 else {
-                    close(appWritePipes[j][0]);
-                    close(appWritePipes[j][1]);
-                    close(appReadPipes[j][0]);
-                    close(appReadPipes[j][1]);
+                    close(master->write_pipes[j][0]);
+                    close(master->write_pipes[j][1]);
+                    close(master->read_pipes[j][0]);
+                    close(master->read_pipes[j][1]);
                 }
 
             }
@@ -74,8 +83,8 @@ void init_slaves(masterADT master) {
             dup2(childReadfd, STDIN_FILENO);
             dup2(childWritefd, STDOUT_FILENO);
 
-            close(childWritefd);
             close(childReadfd);
+            close(childWritefd);
 
             char *args[] = {"./child", NULL};
 
@@ -84,60 +93,59 @@ void init_slaves(masterADT master) {
                 perror("Error al ejecutar programa hijo");
             }
         }
-
-        else {
-            // Parent
-            int j;
-            for (j = 0; j < PROCESSES; j++)
-            {
-                close(appWritePipes[j][0]);
-                close(appReadPipes[j][1]);
-            }
-
-        }
-    }
-}
-
-void clean_resources(masterADT master){
-    int i;
-    for (i = 0; i < master->slave_count; i++) {
-        close(master->write_pipes[i][0]);
-        close(master->read_pipes[i][1]);
     }
 
-    // clean sh_mem
+        // Parent
+    int j;
+    for (j = 0; j < master->slave_count ; j++)
+    {
+        close(master->write_pipes[j][0]);
+        close(master->read_pipes[j][1]);
+    }
 }
 
 
 void free_master(masterADT master) {
-  free(master);
+    int i;
+    for (i = 0; i < master->slave_count; i++)
+    {
+        wait(NULL);
+    }
+    free(master);
   // free shared mem
 }
 
 void test_send(masterADT master) {
-        for (i = 0 ; i < master->slave_count ; i++) {
+    int i;
+    for (i = 0 ; i < master->slave_count ; i++) {
         char * s = "Holaaaa\n";
         int len = strlen(s);
         if (write(master->write_pipes[i][1], &len, sizeof(int)) == -1) {
             perror("Error at writing\n");
             exit(2);
         }
-        if (write(amaster->write_pipes[i][1], s, sizeof(char)*(len+1)) == -1) {
+        if (write(master->write_pipes[i][1], s, sizeof(char)*(len+1)) == -1) {
             perror("Error at writing\n");
             exit(2);
         }
-        close(write_pipes[i][1]);
+        close(master->write_pipes[i][1]);
     }
 }
 
 void test_read(masterADT master) {
-        for (i = 0 ; i < master->slave_count ; i++) {
+    int i;
+    for (i = 0 ; i < master->slave_count ; i++) {
         int length;
         char s[100] = {0};
         read(master->read_pipes[i][0], &length, sizeof(int));
         read(master->read_pipes[i][0], s, sizeof(char)*(length + 1));
         printf(s);
     }
+    for (i = 0; i < master->slave_count; i++)
+    {
+        wait(NULL);
+    }
+    return;
 }
 
 // int main(int argc, char *argv[])
