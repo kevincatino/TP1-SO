@@ -4,12 +4,10 @@
 #include <unistd.h>
 
 #define PROCESSES 4
-
-typedef struct
-{
-    char name[80];
-    int number;
-} data;
+#define MAX_SLAVE_QTY 5
+#define FILES_PER_SLAVE 2
+#define MAX_OUT_LEN 256
+#define RESULT_PATH "./results.txt"
 
 int main(int argc, char *argv[])
 {
@@ -18,7 +16,7 @@ int main(int argc, char *argv[])
     int appReadPipes[PROCESSES][2];
     int i;
 
-    for (i = 0; i < PROCESSES + 1; i++)
+    for (i = 0; i < PROCESSES; i++)
     {
         if (pipe(appReadPipes[i]) == -1) { printf("Error with creating pipe\n"); return 1; }
         if (pipe(appWritePipes[i]) == -1) { printf("Error with creating pipe\n"); return 1; }
