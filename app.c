@@ -9,10 +9,13 @@ int main(int argc, char *argv[])
     
 
     // Parent
-    masterADT master = new_master(NULL, 10, 0);
+    masterADT master = new_master(argv + 1, argc - 1, ".", 0);
     init_slaves(master);
-    test_send(master);
-    test_read(master);
+    assign_initial_tasks(master);
+    fetch_and_assign_new_tasks(master);
+    // test_send(master);
+    // test_read(master);
+    printf("HOLA\n");
     free_master(master);
 
 

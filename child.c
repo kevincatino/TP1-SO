@@ -4,43 +4,49 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#define MAX_LENGTH 256 
+#define MAX_LENGTH 256
 #define MAX_ID_LENGTH 20
 
+void print_result(char *file_name, FILE *opStream);
 
-char path[100] = {0}; 
-int length;
+int main(int argc, char *argv[])
+{
 
+    // int r;
 
-void print_result(char * file_name, FILE * opStream);
+    // while((r = read(STDIN_FILENO, &length, sizeof(int)) > 0)) {
+    //     if ((r = read(STDIN_FILENO, path, sizeof(char)*(length + 1))) == -1) { perror("Error at reading\n"); exit(5); }
+    // }
 
-int main(int argc, char * argv[]) {
+    // problema: para que el read termine, hay que hacer close del fd desde la app, pero cuando hacemos eso no podemos asignar
+    // nuevas tareas. Vamos a usar getline
 
-    int r;
+    char *buf = NULL; // al ser null, la funcion nos reserva la memoria que luego tenemos que liberar
+    size_t length = 0;
+    ssize_t count;
 
-    while((r = read(STDIN_FILENO, &length, sizeof(int)) > 0)) {
-        if ((r = read(STDIN_FILENO, path, sizeof(char)*(length + 1))) == -1) { perror("Error at reading\n"); exit(5); }
+    while ((count = getline(&buf, &length, stdin)) > 0)
+    {
+        buf[count - 1] = 0;
+        int len = (int) count;
+        int r;
+        if ((r = write(STDOUT_FILENO, &len, sizeof(int))) == -1)
+        {
+            perror("Error at writing\n");
+            return 5;
+        }
+
+        if ((r = write(STDOUT_FILENO, buf, sizeof(char) * (len))) == -1)
+        {
+            perror("Error at writing\n");
+            return 5;
+        }
     }
 
-    if (r == 0) {
-        // no hay mas trabajo
-        close(STDIN_FILENO);
-        exit(0);
-    }
+    free(buf);
+    return 0;
 
-    else { perror("read"); exit(2); }
-
-    if (r == -1) { perror("Error at reading\n"); exit(4); }
-
-    // termina el proceso de los archivos. No es necesario cerrar STDIN no?
     
-    // procesar la data
-
-    if ((r = write(STDOUT_FILENO, &length, sizeof(int))) == -1) { perror("Error at writing\n"); return 5; }
-
-    if ((r = write(STDOUT_FILENO, path, sizeof(char)*(length + 1))) == -1) { perror("Error at writing\n"); return 5; }
-
-
 }
 
 // void print_result(char * file_name, FILE * opStream) {
