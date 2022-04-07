@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include "utilities.h"
 
 #define MAX_LENGTH 256
 #define MAX_ID_LENGTH 20
@@ -11,12 +12,6 @@ void print_result(char *file_name, FILE *opStream);
 
 int main(int argc, char *argv[])
 {
-
-    // int r;
-
-    // while((r = read(STDIN_FILENO, &length, sizeof(int)) > 0)) {
-    //     if ((r = read(STDIN_FILENO, path, sizeof(char)*(length + 1))) == -1) { perror("Error at reading\n"); exit(5); }
-    // }
 
     // problema: para que el read termine, hay que hacer close del fd desde la app, pero cuando hacemos eso no podemos asignar
     // nuevas tareas. Vamos a usar getline
@@ -32,14 +27,12 @@ int main(int argc, char *argv[])
         int r;
         if ((r = write(STDOUT_FILENO, &len, sizeof(int))) == -1)
         {
-            perror("Error at writing\n");
-            return 5;
+            error_exit("Error writing\n", WRITE_ERROR);
         }
 
         if ((r = write(STDOUT_FILENO, buf, sizeof(char) * (len))) == -1)
         {
-            perror("Error at writing\n");
-            return 5;
+            error_exit("Error writing\n", WRITE_ERROR);
         }
     }
 

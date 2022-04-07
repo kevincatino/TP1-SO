@@ -1,6 +1,13 @@
+#include "utilities.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
 typedef struct masterCDT * masterADT;
 
-masterADT new_master(char **files, int total_tasks, const char * result_path, int shm_id);
+masterADT new_master(char **files, int total_tasks, char * result_path);
 void init_slaves(masterADT master);
 void clean_resources(masterADT master);
 void test_send(masterADT master);

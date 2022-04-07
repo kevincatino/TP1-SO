@@ -4,43 +4,19 @@
 #include <unistd.h>
 #include "masterADT.h"
 
+#define RESULT_PATH "./results.txt"
+
+
 int main(int argc, char *argv[])
 {
     
-
-    // Parent
-    masterADT master = new_master(argv + 1, argc - 1, ".", 0);
+    masterADT master = new_master(argv + 1, argc - 1, ".");
     init_slaves(master);
     assign_initial_tasks(master);
     fetch_and_assign_new_tasks(master);
-    // test_send(master);
-    // test_read(master);
-    printf("HOLA\n");
     free_master(master);
 
-
-    // fd_set rfds;
-
-    // for (i = 0 ; i < PROCESSES; i++)
-    //     FD_SET(appReadPipes[i][0], &rfds);
-
-    // int tasksPending = 1;
-    // while(tasksPending) {
-    //     FD_ZERO(&rfds);
-    //     select(appReadPipes[PROCESSES-1][1]+1, &rfds, NULL, NULL, NULL);
-
-    //     int i;
-    //     for (i = 0 ; i < PROCESSES ; i++) {
-    //         if (FD_ISSET(appReadPipes[i][0], &rfds)) {
-    //             // read ()
-    //             // postear en shm
-    //             // si hay mas tareas -> write(pipe[1]), else -> close(pipe[1]); tasksPending=0; break;
-    //         }
-    //     }
-
-    //     // cierro todos los pipes restantes
-    return 0;
-    }
+}
 
 
         
