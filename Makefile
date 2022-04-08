@@ -1,14 +1,14 @@
-include ./Makefile.inc
+include Makefile.inc
 
-all:  src
-	@echo "\033[1;3;36m[Proyect compiled]\033[0m"
+all: src
+	@echo -e "\e[1;3;36m[Project compiled] \e[0m"
 
 src:
 	@cd src; make all
 
 clean:
 	@cd src; make clean
-	@echo "\033[1;3;35m[Proyect cleaned]\033[0m"
+	@echo -e '\e[1;3;35m[Project cleaned] \e[0m'
 
 
 .PHONY: src all clean

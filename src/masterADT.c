@@ -1,4 +1,5 @@
 #include "masterADT.h"
+#include "sh_mem_ADT.h"
 
 #define BUF_SIZE 100
 #define SLAVE_COUNT 4
@@ -17,8 +18,7 @@ typedef struct masterCDT
     char **files;
     const char *result_path;
 
-    // shmem_ADT sh_mem;
-    // int sh_id;
+    sh_mem_ADT sh_mem;
 
 } masterCDT;
 
@@ -32,8 +32,7 @@ masterADT new_master(char **files, int total_tasks, char * result_path)
 
     printf("total tasks = %d\n", master->total_tasks);
 
-    // newMaster->sh_mem = otro ADT
-    // newMaster->sh_mem_id = id del shared memory;
+    master->sh_mem = new_sh_mem(getpid(), WRITE);
 
     return master;
 }
@@ -119,6 +118,7 @@ void free_master(masterADT master)
         wait(NULL);
     }
     printf("freeing\n");
+    free_sh_mem_handler(master->sh_mem);
     free(master);
     // free shared mem
 }
@@ -151,7 +151,12 @@ void output_result(masterADT master, int fd, FILE *file)
     read(fd, &length, sizeof(int));
     read(fd, s, sizeof(char) * (length));
     s[length-1] = '\n';
-    s[length] = 0;    
+    s[length] = 0;
+
+    write_sh_mem(master->sh_mem, s);
+
+    if (master->received_tasks == master->total_tasks)
+        finished_writing(master->sh_mem);    
 
     printf(s);
 

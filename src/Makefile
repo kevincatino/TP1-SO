@@ -14,30 +14,28 @@ TARGET_SLAVE := slave
 TARGET_VIEW := view
 
 all: $(TARGET_APP) $(TARGET_SLAVE) $(TARGET_VIEW)
-	@echo "\033[1;3;36m[src compiled]\033[0m"
+	@echo -e "\e[1;3;36m[src compiled]\e[0m"
 
 
 $(TARGET_APP): $(OBJECTS_APP)
-	$(GCC) $(GCC_FLAGS) $(OBJECTS_APP) -o ../$(TARGET_APP).out
-	@echo "\033[3;36m[Solver compiled]\033[0m"
+	@$(GCC) $(GCC_FLAGS) $(OBJECTS_APP) -o ../$(TARGET_APP).out
+	@echo -e "\e[3;36m[Solver compiled]\e[0m"
 
 $(TARGET_SLAVE): $(OBJECTS_SLAVE)
-	$(GCC) $(GCC_FLAGS) $(OBJECTS_SLAVE) -o ../$(TARGET_SLAVE).out
-	@echo "\033[3;36m[Slave compiled]\033[0m"
+	@$(GCC) $(GCC_FLAGS) $(OBJECTS_SLAVE) -o ../$(TARGET_SLAVE).out
+	@echo -e "\e[3;36m[Slave compiled]\e[0m"
 
 $(TARGET_VIEW): $(OBJECTS_VIEW)
-	$(GCC) $(GCC_FLAGS) $(OBJECTS_VIEW) -o ../$(TARGET_VIEW).out
-	@echo "\033[3;36m[View compiled]\033[0m"
-
-
+	@$(GCC) $(GCC_FLAGS) $(OBJECTS_VIEW) -o ../$(TARGET_VIEW).out
+	@echo -e "\e[3;36m[View compiled]\e[0m"
 
 %.o: %.c
-	$(GCC) $(GCC_FLAGS) -I./include -c $< -o $@
-	@echo "\033[32mCompiled object file \033[0m $@"
+	@$(GCC) $(GCC_FLAGS) -I./include -c $< -o $@
+	@echo -e "\e[32m[Compiled object file]\e[0m $@"
 
 
 clean:
-	rm -rf $(OBJECTS) $(TARGETS)
-	@echo "\033[3;35m[src cleaned]\033[0m"
+	@rm -rf $(OBJECTS) $(TARGETS)
+	@echo -e "\e[3;35m[src cleaned]\e[0m"
 	
 .PHONY: all clean $(TARGET_APP) $(TARGET_SLAVE) $(TARGET_VIEW)
