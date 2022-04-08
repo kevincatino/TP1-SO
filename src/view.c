@@ -11,9 +11,9 @@ int main(int argc, char *argv[])
 {
     int key;
     if (argc == 1)
-    {
+    {   // llamo por el master
         // recibo de STDIN el id de shared memory
-        char buff[MAX_ID_LEN + 1];
+        char buff[MAX_ID_LENGTH + 1];
         int count = read(STDIN_FILENO, buff, MAX_ID_LENGTH);
         if (count == -1)
         {
@@ -28,7 +28,16 @@ int main(int argc, char *argv[])
         key = atoi(argv[1]);
     }
 
-    sh_mem_ADT sh_mem = new_sh_mem(key, READ);
+    sh_mem_ADT sh_mem = new_sh_mem(&key, READ);
 
     // imprimir por salida estandar
+
+    char output[MAX_OUTPUT_LENGTH];
+
+    while(can_read(sh_mem)) {  
+        read_sh_mem(sh_mem, output);
+        printf("%s\n", output);
+    }
+
+    free_sh_mem(sh_mem);
 }

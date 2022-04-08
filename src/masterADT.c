@@ -19,6 +19,7 @@ typedef struct masterCDT
     const char *result_path;
 
     sh_mem_ADT sh_mem;
+    int sh_mem_key;
 
 } masterCDT;
 
@@ -32,7 +33,9 @@ masterADT new_master(char **files, int total_tasks, char * result_path)
 
     printf("total tasks = %d\n", master->total_tasks);
 
-    master->sh_mem = new_sh_mem(getpid(), WRITE);
+    master->sh_mem = new_sh_mem(&(master->sh_mem_key), WRITE);
+
+    printf("%d", master->sh_mem_key);
 
     return master;
 }
@@ -118,9 +121,8 @@ void free_master(masterADT master)
         wait(NULL);
     }
     printf("freeing\n");
-    free_sh_mem_handler(master->sh_mem);
+    free_sh_mem(master->sh_mem);
     free(master);
-    // free shared mem
 }
 
 void assign_task(masterADT master, int fd, char *file)
@@ -158,7 +160,7 @@ void output_result(masterADT master, int fd, FILE *file)
     if (master->received_tasks == master->total_tasks)
         finished_writing(master->sh_mem);    
 
-    printf(s);
+    // printf(s);
 
 }
 
@@ -219,39 +221,39 @@ void fetch_and_assign_new_tasks(masterADT master)
     // error
 }
 
-void test_send(masterADT master)
-{
-    int i;
-    for (i = 0; i < SLAVE_COUNT; i++)
-    {
-        char *s = "Holaaaa\n";
-        int len = strlen(s);
-        if (write(master->write_pipes[i][1], &len, sizeof(int)) == -1)
-        {
-            error_exit("Error writing", WRITE_ERROR);
-        }
-        if (write(master->write_pipes[i][1], s, sizeof(char) * (len + 1)) == -1)
-        {
-            error_exit("Error writing", WRITE_ERROR);
-        }
-        close(master->write_pipes[i][1]);
-    }
-}
+// void test_send(masterADT master)
+// {
+//     int i;
+//     for (i = 0; i < SLAVE_COUNT; i++)
+//     {
+//         char *s = "Holaaaa\n";
+//         int len = strlen(s);
+//         if (write(master->write_pipes[i][1], &len, sizeof(int)) == -1)
+//         {
+//             error_exit("Error writing", WRITE_ERROR);
+//         }
+//         if (write(master->write_pipes[i][1], s, sizeof(char) * (len + 1)) == -1)
+//         {
+//             error_exit("Error writing", WRITE_ERROR);
+//         }
+//         close(master->write_pipes[i][1]);
+//     }
+// }
 
-void test_read(masterADT master)
-{
-    int i;
-    for (i = 0; i < SLAVE_COUNT; i++)
-    {
-        int length;
-        char s[100] = {0};
-        read(master->read_pipes[i][0], &length, sizeof(int));
-        read(master->read_pipes[i][0], s, sizeof(char) * (length + 1));
-        printf(s);
-    }
-    for (i = 0; i < SLAVE_COUNT; i++)
-    {
-        wait(NULL);
-    }
-    return;
-}
+// void test_read(masterADT master)
+// {
+//     int i;
+//     for (i = 0; i < SLAVE_COUNT; i++)
+//     {
+//         int length;
+//         char s[100] = {0};
+//         read(master->read_pipes[i][0], &length, sizeof(int));
+//         read(master->read_pipes[i][0], s, sizeof(char) * (length + 1));
+//         printf(s);
+//     }
+//     for (i = 0; i < SLAVE_COUNT; i++)
+//     {
+//         wait(NULL);
+//     }
+//     return;
+// }

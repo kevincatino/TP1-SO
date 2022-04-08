@@ -4,7 +4,8 @@
         "unistd.h": "c",
         "sh_mem_adt.h": "c",
         "stat.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "utilities.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
