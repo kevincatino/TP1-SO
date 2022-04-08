@@ -93,7 +93,7 @@ void init_slaves(masterADT master)
             close(child_read_fd);
             close(child_write_fd);
 
-            char *args[] = {"./child", NULL};
+            char *args[] = {"./slave.out", NULL};
 
             if (execvp(args[0], args) == -1)
             {
