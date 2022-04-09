@@ -79,6 +79,10 @@ static void attach_to(sh_mem_ADT sh_mem_handler, int id)
     int key = sh_mem_handler->flag && WRITE ? sh_mem_handler->id : id;
     
     sh_mem_handler->sh_mem = (sh_mem_t *)shmat(key, NULL, 0); // In order for a process to access that previously created shared memory, it will be necessary for some process variable to "point" to that memory area that does not belong to its address space. To do this, this system call is used, which allows linking that memory area to the logical address of the process.
+
+    // If shmaddr is a null pointer, the segment is attached at the first available address as selected by the system.
+
+    // Si los flags estan en cero, se puede leer y escribir en la memoria compartida
     if (sh_mem_handler->sh_mem == (void *)-1)
         error_exit("Error getting pointer to shared memory\n", SHARED_MEM_ERROR);
 
@@ -132,7 +136,7 @@ void free_sh_mem(sh_mem_ADT sh_mem_handler)
     if (shmdt(sh_mem_handler->sh_mem) == -1)
         error_exit("Error detaching shared memory", SHARED_MEM_ERROR);
 
-    if (sh_mem_handler->flag && WRITE && shmctl(sh_mem_handler->id, IPC_RMID, 0) == -1)
+    if (sh_mem_handler->flag && WRITE && shmctl(sh_mem_handler->id, IPC_RMID, NULL) == -1)
         error_exit("Error in destroying shared memory", SHARED_MEM_ERROR);
 
     sem_unlink(SEM_NAME); // remueve el nombre del semaforo
