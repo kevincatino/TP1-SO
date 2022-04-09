@@ -14,3 +14,4 @@ void test_send(masterADT master);
 void test_read(masterADT master);
 void assign_initial_tasks(masterADT master);
 void fetch_and_assign_new_tasks(masterADT master);
+void free_master(masterADT master);

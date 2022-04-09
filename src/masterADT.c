@@ -1,7 +1,7 @@
 #include "masterADT.h"
 #include "sh_mem_ADT.h"
 
-#define BUF_SIZE 100
+#define BUF_SIZE 256
 #define SLAVE_COUNT 4
 #define FILES_PER_SLAVE 2
 
@@ -16,7 +16,7 @@ typedef struct masterCDT
     int assigned_tasks;
     int received_tasks;
     char **files;
-    const char *result_path;
+    FILE * result_file;
 
     sh_mem_ADT sh_mem;
     int sh_mem_key;
@@ -26,16 +26,21 @@ typedef struct masterCDT
 masterADT new_master(char **files, int total_tasks, char * result_path)
 {
     masterADT master = calloc(1, sizeof(masterCDT));
-    master->result_path = result_path;
 
     master->total_tasks = total_tasks;
     master->files = files;
 
-    printf("total tasks = %d\n", master->total_tasks);
-
     master->sh_mem = new_sh_mem(&(master->sh_mem_key), WRITE);
 
     printf("%d", master->sh_mem_key);
+
+    char tasks_s[BUF_SIZE] = {0};
+
+    snprintf(tasks_s, BUF_SIZE, "%d", total_tasks);
+
+    write_sh_mem(master->sh_mem, tasks_s); // escribo por shared memory la cantidad total de archivos
+
+    master->result_file = fopen(result_path,"w");
 
     return master;
 }
@@ -120,7 +125,6 @@ void free_master(masterADT master)
     {
         wait(NULL);
     }
-    printf("freeing\n");
     free_sh_mem(master->sh_mem);
     free(master);
 }
@@ -128,7 +132,6 @@ void free_master(masterADT master)
 void assign_task(masterADT master, int fd, char *file)
 {
     int length = strlen(master->files[master->assigned_tasks]);
-    printf("assigning %s to fd = %d\n", file, fd);
     write(fd, master->files[master->assigned_tasks], length);
     write(fd, "\n", 1);
     (master->assigned_tasks)++;
@@ -157,8 +160,8 @@ void output_result(masterADT master, int fd, FILE *file)
 
     write_sh_mem(master->sh_mem, s);
 
-    if (master->received_tasks == master->total_tasks)
-        finished_writing(master->sh_mem);    
+    if (fwrite(s, sizeof(char), length+1, master->result_file) == 0)
+        error_exit("Error writing to file", WRITE_ERROR);   
 
     // printf(s);
 
@@ -176,11 +179,6 @@ void fetch_and_assign_new_tasks(masterADT master)
 {
     fd_set rfd;
 
-    FILE *result = fopen(master->result_path, "w");
-    if (result == NULL) {
-
-    }
-        printf("received=%d, total=%d, assigned=%d\n", master->received_tasks, master->total_tasks, master->assigned_tasks);
         while (master->received_tasks < master->total_tasks)
         {
             FD_ZERO(&rfd);
@@ -198,14 +196,12 @@ void fetch_and_assign_new_tasks(masterADT master)
             {
                 if (FD_ISSET(master->read_pipes[i][0], &rfd))
                 {
-                    printf("pipe %d listo para leer\n", master->read_pipes[i][0]);
                     output_result(master, master->read_pipes[i][0], NULL);
                     master->received_tasks++;
 
                     if (master->assigned_tasks < master->total_tasks)
                         assign_task(master, master->write_pipes[i][1], master->files[master->assigned_tasks]);
 
-                    printf("tareas completadas: %d\n", master->received_tasks);
                     break;
                 }
             }
@@ -213,7 +209,6 @@ void fetch_and_assign_new_tasks(masterADT master)
         }
         
         close_pipes(master);
-        printf("FINISHED!\n");
 
     // if (fclose(result) == -1) {
     //     exit(4);

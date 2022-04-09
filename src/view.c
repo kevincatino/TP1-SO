@@ -24,20 +24,28 @@ int main(int argc, char *argv[])
     }
     else
     {
-        // recibo por arumento el id de shared memory
+        // recibo por argumento el id de shared memory
         key = atoi(argv[1]);
     }
-
+    printf("la llave es %d\n", key);
     sh_mem_ADT sh_mem = new_sh_mem(&key, READ);
 
     // imprimir por salida estandar
 
     char output[MAX_OUTPUT_LENGTH];
 
-    while(can_read(sh_mem)) {  
+    read_sh_mem(sh_mem, output);
+
+    int lines = atoi(output);
+    int counter = 0;
+
+    while(counter < lines) {  
         read_sh_mem(sh_mem, output);
         printf("%s\n", output);
+        counter++;
     }
 
     free_sh_mem(sh_mem);
+
+    return 0;
 }
