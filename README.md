@@ -1,9 +1,9 @@
 # TP1-SO
 
 ## Alumnos
-- Banfi Malena 61008
-- Catino Kevin
-- Fleischer Lucas
+- Banfi Malena, 61008
+- Catino Kevin, 61643
+- Fleischer Lucas, 61153
 
 
 ## SATsolver
@@ -14,6 +14,6 @@ El objetivo de este trabajo practico es aprender el uso de distintos IPCs los cu
 
 
 ## Compilacion
-
+Para la compilacion, se deben descargar los archivos provistos por el grupo. Una vez descargados, abrir la terminal, dirigirse a la carpeta descargada y escribir: *make all*. Si se quiere limpiar el proyecto, ejecutar el comando: *make clean*
 
 ## Ejecucion
