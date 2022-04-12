@@ -36,7 +36,7 @@ masterADT new_master(char **files, int total_tasks, char * result_path)
 
     char tasks_s[BUF_SIZE] = {0};
 
-    snprintf(tasks_s, BUF_SIZE, "%d", total_tasks);
+    snprintf(tasks_s, BUF_SIZE, "%d\n", total_tasks);
 
     write_sh_mem(master->sh_mem, tasks_s); // escribo por shared memory la cantidad total de archivos
 
@@ -118,17 +118,6 @@ void init_slaves(masterADT master)
     }
 }
 
-void free_master(masterADT master)
-{
-    int i;
-    for (i = 0; i < SLAVE_COUNT; i++)
-    {
-        wait(NULL);
-    }
-    free_sh_mem(master->sh_mem);
-    free(master);
-}
-
 void assign_task(masterADT master, int fd, char *file)
 {
     int length = strlen(master->files[master->assigned_tasks]);
@@ -155,21 +144,19 @@ void output_result(masterADT master, int fd, FILE *file)
     char s[BUF_SIZE] = {0};
     read(fd, &length, sizeof(int));
     read(fd, s, sizeof(char) * (length));
-    s[length-1] = '\n';
-    s[length] = 0;
 
     write_sh_mem(master->sh_mem, s);
 
+        s[length] = '\n';
+
     if (fwrite(s, sizeof(char), length+1, master->result_file) == 0)
         error_exit("Error writing to file", WRITE_ERROR);   
-
-    // printf(s);
 
 }
 
 static void close_pipes(masterADT master) {
     int i;
-    for (i=0 ; i< SLAVE_COUNT ; i++) {
+    for (i=0 ; i < SLAVE_COUNT ; i++) {
         close(master->read_pipes[i][0]);
         close(master->write_pipes[i][1]);
     }
@@ -207,13 +194,18 @@ void fetch_and_assign_new_tasks(masterADT master)
             }
             
         }
-        
-        close_pipes(master);
+}
 
-    // if (fclose(result) == -1) {
-    //     exit(4);
-    // }
-    // error
+void free_master(masterADT master)
+{
+    close_pipes(master);
+    int i;
+    for (i = 0; i < SLAVE_COUNT; i++)
+    {
+        wait(NULL);
+    }
+    free_sh_mem(master->sh_mem);
+    free(master);
 }
 
 // void test_send(masterADT master)

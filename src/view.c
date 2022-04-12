@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
         // recibo por argumento el id de shared memory
         key = atoi(argv[1]);
     }
-    printf("la llave es %d\n", key);
+
     sh_mem_ADT sh_mem = new_sh_mem(&key, READ);
 
     // imprimir por salida estandar

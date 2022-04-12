@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
         {
             error_exit("Error writing\n", WRITE_ERROR);
         }
+
     }
 
     free(buf);

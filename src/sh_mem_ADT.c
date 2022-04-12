@@ -120,15 +120,16 @@ void read_sh_mem(sh_mem_ADT sh_mem_handler, char *buff)
 
 void free_sh_mem(sh_mem_ADT sh_mem_handler)
 {
-    if (((sh_mem_handler->flag) & READ) && sem_close(sh_mem_handler->semaphore) == -1)
+    if (((sh_mem_handler->flag) & READ) && (sem_close(sh_mem_handler->semaphore) == -1))
         error_exit("Error closing semaphore", SEMAPHORE_ERROR);
 
-    if (((sh_mem_handler->flag) & READ) && shmdt(sh_mem_handler->sh_mem) == -1)
+    if (((sh_mem_handler->flag) & READ) && (shmdt(sh_mem_handler->sh_mem) == -1))
         error_exit("Error detaching shared memory", SHARED_MEM_ERROR);
 
-    if (((sh_mem_handler->flag) & READ) && shmctl(sh_mem_handler->id, IPC_RMID, NULL) == -1)
+    if (((sh_mem_handler->flag) & READ) && (shmctl(sh_mem_handler->id, IPC_RMID, NULL) == -1))
         error_exit("Error in destroying shared memory", SHARED_MEM_ERROR);
 
-    sem_unlink(SEM_NAME); // remueve el nombre del semaforo
+    if (((sh_mem_handler->flag) & READ) && (sem_unlink(SEM_NAME) == -1)) // remueve el nombre del semaforo
+        error_exit("Error unlinking name from semaphore", SEMAPHORE_ERROR);
     free(sh_mem_handler);
 }
