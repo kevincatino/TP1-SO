@@ -16,7 +16,7 @@
 
 #define MAX_LINES 100
 #define MAX_BUF_SIZE 256
-#define SEM_NAME "namedSem"
+#define SEM_NAME "/namedSem"
 
 //A named semaphore is identified by a name of the form
               // "/somename"

@@ -7,61 +7,74 @@
 
 #define MAX_LENGTH 256
 #define MAX_ID_LENGTH 20
+#define COMMAND  "minisat %s | grep -o -e \"Number of.*[0-9]\\+\" -e \"CPU time.*s\" -e \".*SATISFIABLE\" | tr -s \" \" | tr \"\n\" \"\t\""
 
-void print_result(char *file_name, FILE *opStream);
+
+void get_minisat_output(char * minisat_buf, char * file_name);
+
+void write_to_stdout(char * result_buf, int length);
+
+int append_other_data(char * result_buf, char * file_buf, char * minisat_buf);
+
+
 
 int main(int argc, char *argv[])
 {
 
-    // problema: para que el read termine, hay que hacer close del fd desde la app, pero cuando hacemos eso no podemos asignar
-    // nuevas tareas. Vamos a usar getline
+    // problema: para que el read termine, hay que hacer close del fd desde la app, pero cuando hacemos eso no podemos asignar nuevas tareas. Vamos a usar getline
 
-    char *buf = NULL; // al ser null, la funcion nos reserva la memoria que luego tenemos que liberar
-    size_t length = 0;
+    char *file_name = NULL; // al ser null, la funcion nos reserva la memoria que luego tenemos que liberar
+    size_t l = 0;
     ssize_t count;
+    char result_buf[MAX_LENGTH] = {0};
 
-    while ((count = getline(&buf, &length, stdin)) > 0)
+    while ((count = getline(&file_name, &l, stdin)) > 0)
     {
-        buf[count - 1] = 0;
-        int len = (int) count;
-        int r;
-        if ((r = write(STDOUT_FILENO, &len, sizeof(int))) == -1)
-        {
-            error_exit("Error writing\n", WRITE_ERROR);
-        }
+        file_name[count - 1] = 0;
 
-        if ((r = write(STDOUT_FILENO, buf, sizeof(char) * (len))) == -1)
-        {
-            error_exit("Error writing\n", WRITE_ERROR);
-        }
+        char minisat_buf[MAX_LENGTH] = {0};
+        
+        get_minisat_output(minisat_buf, file_name);
+
+        int length = append_other_data(result_buf, file_name, minisat_buf);
+
+        write_to_stdout(result_buf, length);
 
     }
 
-    free(buf);
+    free(file_name);
     return 0;
 
     
 }
 
-// void print_result(char * file_name, FILE * opStream) {
-//     char op[MAX_LENGTH + 1]; // output
+int append_other_data(char * result_buf, char * file_buf, char * minisat_buf) {
+    return snprintf(result_buf, MAX_LENGTH, "File: %s \t Process: %d \t %s\n", file_buf, getpid(), minisat_buf);
+}
 
-//     int total = fread(op, sizeof(char), MAX_LENGTH, opStream); // lle MAX_LENGTH items of data, sizeof de longitud, desde el opStream (el output), y las guarda en output
-//     op[total] = 0;
+void get_minisat_output(char * minisat_buf, char * file_name) {
 
-//     int file_name_length = strlen(file_name);
+        char cmd_array[MAX_LENGTH] = {0};
 
-//     strcat(op, "File ");
-//     strcat(op, file_name);
+        sprintf(cmd_array, COMMAND, file_name);
 
-//     char slave_ID_string[MAX_ID_LENGTH];
+        FILE * result_file = popen(cmd_array, "r");
 
-//     pid_t slave_ID = getpid(); // por ahora lo dejo como struct, total es como un int
+        if (result_file) {
+            fread(minisat_buf, 1, MAX_LENGTH, result_file);
+            fclose(result_file);
+        }
+}
 
-//     total += snprintf(slave_ID_string, 20, "Slave ID: %d\n, slave_ID", slave_ID) + file_name_length + 7; //snprintf escriben at the most size (20) bytes. Analizar el porq del +7
+void write_to_stdout(char * result_buf, int length) {
+    int r;
+        if ((r = write(STDOUT_FILENO, &length, sizeof(int))) == -1)
+        {
+            error_exit("Error writing\n", WRITE_ERROR);
+        }
 
-//     strcat(op, slave_ID_string);
-//     op[total] = 0;
-
-//     write(STDOUT_FILENO, op, total);
-//  }
+        if ((r = write(STDOUT_FILENO, result_buf, sizeof(char) * (length))) == -1)
+        {
+            error_exit("Error writing\n", WRITE_ERROR);
+        }
+}
