@@ -23,9 +23,7 @@ int append_other_data(char * result_buf, char * file_buf, char * minisat_buf);
 int main(int argc, char *argv[])
 {
 
-    // problema: para que el read termine, hay que hacer close del fd desde la app, pero cuando hacemos eso no podemos asignar nuevas tareas. Vamos a usar getline
-
-    char *file_name = NULL; // al ser null, la funcion nos reserva la memoria que luego tenemos que liberar
+    char *file_name = NULL; 
     size_t l = 0;
     ssize_t count;
     char result_buf[MAX_LENGTH] = {0};

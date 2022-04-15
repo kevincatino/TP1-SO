@@ -43,7 +43,7 @@ masterADT new_master(char **files, int total_tasks, char * result_path)
     if (snprintf(tasks_s, BUF_SIZE, "%d\n", total_tasks) < 0)
         error_exit("Error writing to string", WRITE_ERROR);
 
-    write_sh_mem(master->sh_mem, tasks_s); // escribo por shared memory la cantidad total de archivos
+    write_sh_mem(master->sh_mem, tasks_s); // Escribo por shared memory la cantidad total de archivos
 
     master->result_file = fopen(result_path,"w");
 
