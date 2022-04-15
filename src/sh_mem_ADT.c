@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include <errno.h>
 #include <fcntl.h>
@@ -45,12 +47,10 @@ sh_mem_ADT new_sh_mem(int * key, int flag)
     sh_mem_ADT sh_mem_handler = calloc(1, sizeof(sh_mem_CDT)); // guarda memoria para 1 elem de sizeof size, usamos calloc para setear la memory en cero
 
     if (sh_mem_handler == NULL)
-        error_exit("Error allocating memory", MEMORY_ERROR);
+        error_exit("Error allocating memory",  MALLOC_ERROR);
 
     sh_mem_handler->flag = flag;
 
-    if (sh_mem_handler == NULL)
-        error_exit("Error allocating memory", MALLOC_ERROR);
 
     // usamos O_CREAT,  si el file existe no hace nada, sino lo crea y lo ponemso en cero al semaphore para q este bloqueado
     sh_mem_handler->semaphore = sem_open(SEM_NAME, O_CREAT, S_IRUSR | S_IWUSR, 0); // usamos -> y no . porq sh_mem_handler es un ADT y apunta a un elemento (semaphore) del CDT
@@ -125,16 +125,20 @@ void read_sh_mem(sh_mem_ADT sh_mem_handler, char *buff)
 
 void free_sh_mem(sh_mem_ADT sh_mem_handler)
 {
-    if (((sh_mem_handler->flag) & READ) && (sem_close(sh_mem_handler->semaphore) == -1))
+    if ((sem_close(sh_mem_handler->semaphore) == -1))
         error_exit("Error closing semaphore", SEMAPHORE_ERROR);
 
-    if (((sh_mem_handler->flag) & READ) && (shmdt(sh_mem_handler->sh_mem) == -1))
+    if ((shmdt(sh_mem_handler->sh_mem) == -1))
         error_exit("Error detaching shared memory", SHARED_MEM_ERROR);
 
-    if (((sh_mem_handler->flag) & READ) && (shmctl(sh_mem_handler->id, IPC_RMID, NULL) == -1))
-        error_exit("Error in destroying shared memory", SHARED_MEM_ERROR);
+    // solo destruimos la shared mem y desanclamos el nombre del semaforo desde view
 
-    if (((sh_mem_handler->flag) & READ) && (sem_unlink(SEM_NAME) == -1)) // remueve el nombre del semaforo
+    if (((sh_mem_handler->flag) & READ) && (shmctl(sh_mem_handler->id, IPC_RMID, NULL) == -1))
+        error_exit("Error in destroying shared memory", SHARED_MEM_ERROR); 
+
+    if (((sh_mem_handler->flag) & READ) && (sem_unlink(SEM_NAME) == -1))
         error_exit("Error unlinking name from semaphore", SEMAPHORE_ERROR);
+
+
     free(sh_mem_handler);
 }

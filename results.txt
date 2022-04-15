@@ -1,24 +1,22 @@
-File: dubois21.cnf 	 Process: 5053 	 Number of variables: 63	Number of clauses: 168	CPU time : 0.00252 s	UNSATISFIABLE	
+File: ../cnfs/aim-100-1_6-no-1.cnf 	 Process: 758 	 Number of variables: 100	Number of clauses: 160	CPU time : 0.002087 s	UNSATISFIABLE	
 
-File: aim-100-1_6-no-1.cnf 	 Process: 5051 	 Number of variables: 100	Number of clauses: 160	CPU time : 0.002822 s	UNSATISFIABLE	
+File: ../cnfs/aim-50-1_6-yes1-4.cnf 	 Process: 758 	 Number of variables: 50	Number of clauses: 80	CPU time : 0.001754 s	SATISFIABLE	
 
-File: aim-50-1_6-yes1-4.cnf 	 Process: 5051 	 Number of variables: 50	Number of clauses: 80	CPU time : 0.001821 s	SATISFIABLE	
+File: ../cnfs/bf0432-007.cnf 	 Process: 759 	 Number of variables: 1040	Number of clauses: 3369	CPU time : 0.009501 s	UNSATISFIABLE	
 
-File: dubois22.cnf 	 Process: 5053 	 Number of variables: 66	Number of clauses: 176	CPU time : 0.002386 s	UNSATISFIABLE	
+File: ../cnfs/dubois21.cnf 	 Process: 760 	 Number of variables: 63	Number of clauses: 168	CPU time : 0.001892 s	UNSATISFIABLE	
 
-File: hole6.cnf 	 Process: 5054 	 Number of variables: 42	Number of clauses: 133	CPU time : 0.007963 s	UNSATISFIABLE	
+File: ../cnfs/dubois22.cnf 	 Process: 760 	 Number of variables: 66	Number of clauses: 176	CPU time : 0 s	UNSATISFIABLE	
 
-File: simple_v3_c2.cnf 	 Process: 5051 	 Number of variables: 3	Number of clauses: 2	CPU time : 0.002391 s	SATISFIABLE	
+File: ../cnfs/quinn.cnf 	 Process: 758 	 Number of variables: 16	Number of clauses: 18	CPU time : 0.001526 s	SATISFIABLE	
 
-File: quinn.cnf 	 Process: 5053 	 Number of variables: 16	Number of clauses: 18	CPU time : 0.002484 s	SATISFIABLE	
+File: ../cnfs/dubois20.cnf 	 Process: 759 	 Number of variables: 60	Number of clauses: 160	CPU time : 0.001782 s	UNSATISFIABLE	
 
-File: par8-1-c.cnf 	 Process: 5054 	 Number of variables: 64	Number of clauses: 254	CPU time : 0.00343 s	SATISFIABLE	
+File: ../cnfs/hole6.cnf 	 Process: 761 	 Number of variables: 42	Number of clauses: 133	CPU time : 0.007709 s	UNSATISFIABLE	
 
-File: bf0432-007.cnf 	 Process: 5052 	 Number of variables: 1040	Number of clauses: 3369	CPU time : 0.005536 s	UNSATISFIABLE	
+File: ../cnfs/simple_v3_c2.cnf 	 Process: 758 	 Number of variables: 3	Number of clauses: 2	CPU time : 0.002291 s	SATISFIABLE	
 
-File: uf20-01.cnf 	 Process: 5051 	 Number of variables: 20	Number of clauses: 91	CPU time : 0.002747 s	SATISFIABLE	
+File: ../cnfs/zebra_v155_c1135.cnf 	 Process: 759 	 Number of variables: 155	Number of clauses: 1067	CPU time : 0.003681 s	SATISFIABLE	
 
-File: zebra_v155_c1135.cnf 	 Process: 5053 	 Number of variables: 155	Number of clauses: 1067	CPU time : 0.005717 s	SATISFIABLE	
-
-File: dubois20.cnf 	 Process: 5052 	 Number of variables: 60	Number of clauses: 160	CPU time : 0.001908 s	UNSATISFIABLE	
+File: ../cnfs/par8-1-c.cnf 	 Process: 761 	 Number of variables: 64	Number of clauses: 254	CPU time : 0.00216 s	SATISFIABLE	
 

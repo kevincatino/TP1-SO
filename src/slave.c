@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -78,13 +80,12 @@ void get_minisat_output(char * minisat_buf, char * file_name) {
 }
 
 void write_to_stdout(char * result_buf, int length) {
-    int r;
-        if ((r = write(STDOUT_FILENO, &length, sizeof(int))) == -1)
+        if (write(STDOUT_FILENO, &length, sizeof(int)) == -1)
         {
             error_exit("Error writing\n", WRITE_ERROR);
         }
 
-        if ((r = write(STDOUT_FILENO, result_buf, sizeof(char) * (length))) == -1)
+        if (write(STDOUT_FILENO, result_buf, sizeof(char) * (length)) == -1)
         {
             error_exit("Error writing\n", WRITE_ERROR);
         }

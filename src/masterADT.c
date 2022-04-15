@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "masterADT.h"
 #include "sh_mem_ADT.h"
 
@@ -10,7 +12,6 @@ typedef struct masterCDT
     int pids[SLAVE_COUNT];
     int write_pipes[SLAVE_COUNT][2];
     int read_pipes[SLAVE_COUNT][2];
-    int slave_processed[SLAVE_COUNT];
 
     int total_tasks;
     int assigned_tasks;
@@ -27,7 +28,7 @@ masterADT new_master(char **files, int total_tasks, char * result_path)
 {
     masterADT master = calloc(1, sizeof(masterCDT));
     if (master == NULL)
-        error_exit("Error allocating memory", MEMORY_ERROR);
+        error_exit("Error allocating memory", MALLOC_ERROR);
 
     master->total_tasks = total_tasks;
     master->files = files;
