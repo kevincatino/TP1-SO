@@ -1,0 +1,2 @@
+www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is available here: https://www.viva64.com/en/w/.
+/home/khcatino/SO/TP1-SO/src/sh_mem_ADT.c	52	warn	V522 There might be dereferencing of a potential null pointer 'sh_mem_handler'. Check lines: 52, 47.
