@@ -26,17 +26,21 @@ typedef struct masterCDT
 masterADT new_master(char **files, int total_tasks, char * result_path)
 {
     masterADT master = calloc(1, sizeof(masterCDT));
+    if (master == NULL)
+        error_exit("Error allocating memory", MEMORY_ERROR);
 
     master->total_tasks = total_tasks;
     master->files = files;
 
     master->sh_mem = new_sh_mem(&(master->sh_mem_key), WRITE);
 
-    printf("%d", master->sh_mem_key);
+    if (printf("%d", master->sh_mem_key) < 0)
+        error_exit("Error printing shared mem id", WRITE_ERROR);
 
     char tasks_s[BUF_SIZE] = {0};
 
-    snprintf(tasks_s, BUF_SIZE, "%d\n", total_tasks);
+    if (snprintf(tasks_s, BUF_SIZE, "%d\n", total_tasks) < 0)
+        error_exit("Error writing to string", WRITE_ERROR);
 
     write_sh_mem(master->sh_mem, tasks_s); // escribo por shared memory la cantidad total de archivos
 
@@ -53,11 +57,11 @@ void init_slaves(masterADT master)
     {
         if (pipe(master->read_pipes[i]) == -1)
         {
-            error_exit("Error creating pipe\n", PIPE_ERROR);
+            error_exit("Error creating pipe\n", FD_ERROR);
         }
         if (pipe(master->write_pipes[i]) == -1)
         {
-            error_exit("Error creating pipe\n", PIPE_ERROR);
+            error_exit("Error creating pipe\n", FD_ERROR);
         }
     }
 
@@ -82,23 +86,23 @@ void init_slaves(masterADT master)
             {
                 if (j == i)
                 {
-                    close(master->write_pipes[j][1]);
-                    close(master->read_pipes[j][0]);
+                    if (close(master->write_pipes[j][1]) == -1 || close(master->read_pipes[j][0]) == -1)
+                        error_exit("Error closing slave pipes", FD_ERROR);
+                    
                 }
                 else
                 {
-                    close(master->write_pipes[j][0]);
-                    close(master->write_pipes[j][1]);
-                    close(master->read_pipes[j][0]);
-                    close(master->read_pipes[j][1]);
+                    if(close(master->write_pipes[j][0]) == -1 || close(master->write_pipes[j][1]) == -1
+                    || close(master->read_pipes[j][0]) == -1 || close(master->read_pipes[j][1]) == -1)
+                        error_exit("Error closing slave pipes", FD_ERROR);
                 }
             }
 
-            dup2(child_read_fd, STDIN_FILENO);
-            dup2(child_write_fd, STDOUT_FILENO);
+            if (dup2(child_read_fd, STDIN_FILENO) == -1 || dup2(child_write_fd, STDOUT_FILENO) == -1)
+                error_exit("Error duplicating fd", FD_ERROR);
 
-            close(child_read_fd);
-            close(child_write_fd);
+            if (close(child_read_fd) == -1 || close(child_write_fd) == -1)
+                error_exit("Error closing slave pipes", FD_ERROR);
 
             char *args[] = {"./slave.out", NULL};
 
@@ -121,8 +125,13 @@ void init_slaves(masterADT master)
 void assign_task(masterADT master, int fd, char *file)
 {
     int length = strlen(master->files[master->assigned_tasks]);
-    write(fd, master->files[master->assigned_tasks], length);
-    write(fd, "\n", 1);
+
+    if (write(fd, master->files[master->assigned_tasks], length) == -1)
+        error_exit("Error writing to file descriptor", WRITE_ERROR);
+
+    if (write(fd, "\n", 1) == -1)
+        error_exit("Error writing to file descriptor", WRITE_ERROR);
+
     (master->assigned_tasks)++;
 }
 
@@ -142,8 +151,8 @@ void output_result(masterADT master, int fd, FILE *file)
 {
     int length;
     char s[BUF_SIZE] = {0};
-    read(fd, &length, sizeof(int));
-    read(fd, s, sizeof(char) * (length));
+    if (read(fd, &length, sizeof(int)) == -1 || read(fd, s, sizeof(char) * (length)) == -1)
+        error_exit("Error reading result from pipe", READ_ERROR);
 
     write_sh_mem(master->sh_mem, s);
 
@@ -157,8 +166,11 @@ void output_result(masterADT master, int fd, FILE *file)
 static void close_pipes(masterADT master) {
     int i;
     for (i=0 ; i < SLAVE_COUNT ; i++) {
-        close(master->read_pipes[i][0]);
-        close(master->write_pipes[i][1]);
+        if (close(master->read_pipes[i][0]) == -1)
+            error_exit("Error closing master read pipe", FD_ERROR);
+
+        if (close(master->write_pipes[i][1]) == -1)
+            error_exit("Error closing master write pipe", FD_ERROR);
     }
 }
 
@@ -199,6 +211,10 @@ void fetch_and_assign_new_tasks(masterADT master)
 void free_master(masterADT master)
 {
     close_pipes(master);
+
+    if(fclose(master->result_file) == EOF)
+        error_exit("Error closing file", FILE_ERROR);
+
     int i;
     for (i = 0; i < SLAVE_COUNT; i++)
     {
@@ -208,39 +224,3 @@ void free_master(masterADT master)
     free(master);
 }
 
-// void test_send(masterADT master)
-// {
-//     int i;
-//     for (i = 0; i < SLAVE_COUNT; i++)
-//     {
-//         char *s = "Holaaaa\n";
-//         int len = strlen(s);
-//         if (write(master->write_pipes[i][1], &len, sizeof(int)) == -1)
-//         {
-//             error_exit("Error writing", WRITE_ERROR);
-//         }
-//         if (write(master->write_pipes[i][1], s, sizeof(char) * (len + 1)) == -1)
-//         {
-//             error_exit("Error writing", WRITE_ERROR);
-//         }
-//         close(master->write_pipes[i][1]);
-//     }
-// }
-
-// void test_read(masterADT master)
-// {
-//     int i;
-//     for (i = 0; i < SLAVE_COUNT; i++)
-//     {
-//         int length;
-//         char s[100] = {0};
-//         read(master->read_pipes[i][0], &length, sizeof(int));
-//         read(master->read_pipes[i][0], s, sizeof(char) * (length + 1));
-//         printf(s);
-//     }
-//     for (i = 0; i < SLAVE_COUNT; i++)
-//     {
-//         wait(NULL);
-//     }
-//     return;
-// }

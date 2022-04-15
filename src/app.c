@@ -12,7 +12,7 @@
 
 int main(int argc, char *argv[])
 {
-    
+    sleep(2);
     masterADT master = new_master(argv + 1, argc - 1, RESULT_PATH);
     init_slaves(master);
     assign_initial_tasks(master); //2 tareas iniciales por esclavo

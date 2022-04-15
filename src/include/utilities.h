@@ -1,4 +1,4 @@
-#define PIPE_ERROR 1
+#define FD_ERROR 1
 #define FILE_ERROR 2
 #define FORK_ERROR 3
 #define EXEC_ERROR 4
@@ -9,6 +9,7 @@
 #define SHARED_MEM_ERROR 9
 #define MALLOC_ERROR 10
 #define MEMORY_ERROR 11
+#define POPEN_ERROR 12
 
 #define FALSE 0
 #define TRUE 1

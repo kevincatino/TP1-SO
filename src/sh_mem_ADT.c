@@ -44,6 +44,9 @@ sh_mem_ADT new_sh_mem(int * key, int flag)
 {
     sh_mem_ADT sh_mem_handler = calloc(1, sizeof(sh_mem_CDT)); // guarda memoria para 1 elem de sizeof size, usamos calloc para setear la memory en cero
 
+    if (sh_mem_handler == NULL)
+        error_exit("Error allocating memory", MEMORY_ERROR);
+
     sh_mem_handler->flag = flag;
 
     if (sh_mem_handler == NULL)
@@ -52,7 +55,7 @@ sh_mem_ADT new_sh_mem(int * key, int flag)
     // usamos O_CREAT,  si el file existe no hace nada, sino lo crea y lo ponemso en cero al semaphore para q este bloqueado
     sh_mem_handler->semaphore = sem_open(SEM_NAME, O_CREAT, S_IRUSR | S_IWUSR, 0); // usamos -> y no . porq sh_mem_handler es un ADT y apunta a un elemento (semaphore) del CDT
 
-    if (sh_mem_handler->semaphore == SEM_FAILED) // on error sem_open returns sem_failes ESTA EN MAN
+    if (sh_mem_handler->semaphore == SEM_FAILED) // on error sem_open returns SEM_FAILED
         error_exit("Error opening semaphore", SHARED_MEM_ERROR);
 
     if (flag & WRITE)
@@ -103,7 +106,8 @@ void write_sh_mem(sh_mem_ADT sh_mem_handler, const char *msg)
         error_exit("Out of memory", MEMORY_ERROR);
     }
 
-    snprintf(sh_mem_handler->sh_mem->buff[sh_mem_handler->sh_mem->curr_writing_line++], MAX_BUF_SIZE, "%s", msg); // escribo msg en el sh_m, con max_buff_size de tamanio y %s de formato
+    if (snprintf(sh_mem_handler->sh_mem->buff[sh_mem_handler->sh_mem->curr_writing_line++], MAX_BUF_SIZE, "%s", msg) < 0) // escribo msg en el sh_m, con max_buff_size de tamanio y %s de formato
+         error_exit("Error writing to shared memory", WRITE_ERROR);
 
     if (sem_post(sh_mem_handler->semaphore) == -1) // le digo a view que ahora puede leer
         error_exit("Error writing in semaphore", SEMAPHORE_ERROR);
@@ -115,7 +119,8 @@ void read_sh_mem(sh_mem_ADT sh_mem_handler, char *buff)
     if (sem_wait(sh_mem_handler->semaphore) == -1) // espero a que master me permita leer
         error_exit("Error writing in semaphore", SEMAPHORE_ERROR);
 
-    snprintf(buff, MAX_BUF_SIZE, "%s", sh_mem_handler->sh_mem->buff[sh_mem_handler->sh_mem->curr_reading_line++]); // redirecciona la salida del printf al buffer (en este caso lo que este en %s)
+    if (snprintf(buff, MAX_BUF_SIZE, "%s", sh_mem_handler->sh_mem->buff[sh_mem_handler->sh_mem->curr_reading_line++]) < 0) // redirecciona la salida del printf al buffer (en este caso lo que este en %s)
+        error_exit("Error reading from shared memory", READ_ERROR);
 }
 
 void free_sh_mem(sh_mem_ADT sh_mem_handler)

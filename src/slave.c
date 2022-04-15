@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
 
     }
 
+
     free(file_name);
     return 0;
 
@@ -49,20 +50,30 @@ int main(int argc, char *argv[])
 }
 
 int append_other_data(char * result_buf, char * file_buf, char * minisat_buf) {
-    return snprintf(result_buf, MAX_LENGTH, "File: %s \t Process: %d \t %s\n", file_buf, getpid(), minisat_buf);
+    int length = snprintf(result_buf, MAX_LENGTH, "File: %s \t Process: %d \t %s\n", file_buf, getpid(), minisat_buf);
+
+    if (length < 0)
+        error_exit("Error printing to string", WRITE_ERROR);
+
+    return length;
 }
 
 void get_minisat_output(char * minisat_buf, char * file_name) {
 
         char cmd_array[MAX_LENGTH] = {0};
 
-        sprintf(cmd_array, COMMAND, file_name);
+        if (sprintf(cmd_array, COMMAND, file_name) < 0)
+            error_exit("Error printing to string", WRITE_ERROR);
 
         FILE * result_file = popen(cmd_array, "r");
 
+        if (result_file == NULL)
+            error_exit("Error opening minisat process", POPEN_ERROR);
+
         if (result_file) {
             fread(minisat_buf, 1, MAX_LENGTH, result_file);
-            fclose(result_file);
+            if (fclose(result_file) == EOF)
+                error_exit("Error closing file", FILE_ERROR);
         }
 }
 

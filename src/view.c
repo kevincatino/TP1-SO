@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
         {
             error_exit("Error reading from STDIN", WRITE_ERROR);
         }
+
         buff[count] = 0;
         key =  atoi(buff);
     }
@@ -41,7 +42,10 @@ int main(int argc, char *argv[])
 
     while(counter < lines) {  
         read_sh_mem(sh_mem, output);
-        printf("%s\n", output);
+        
+        if (printf("%s\n", output) < 0)
+            error_exit("Error printing line to stdout", WRITE_ERROR);
+
         counter++;
     }
 
