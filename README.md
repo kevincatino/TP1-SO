@@ -10,8 +10,6 @@
 El objetivo de este trabajo practico es aprender el uso de distintos IPCs los cuales se encuentran presentes en un sistema de POSIX. Para lograr dicho objetivo, el sistema implementado (aplicacion) distribuirá las tareas de resolución del SAT entre varios procesos. Consiste en los siguientes modulos:
 *modulos que usemos MODIFICAR*
 
-## Requerimientos
-
 
 ## Compilacion
 Se debe compilar haciendo ***make all*** desde la carpeta “TP1-SO”, pudiéndose además hacer un ***make clean*** para borrar los archivos generados y permitir un recompilado del proyecto.
