@@ -1,22 +1,22 @@
-File: ../cnfs/dubois21.cnf          	 Process: 20117	 Variables: 63   	 Clauses: 168  	 CPU time: 0.00299 s	 UNSATISFIABLE
+File: ../cnfs/dubois21.cnf          	 Process: 602  	 Variables: 63   	 Clauses: 168  	 CPU time: 0.00594 s	 UNSATISFIABLE
 
-File: ../cnfs/aim-100-1_6-no-1.cnf  	 Process: 20115	 Variables: 100  	 Clauses: 160  	 CPU time: 0.00324 s	 UNSATISFIABLE
+File: ../cnfs/aim-100-1_6-no-1.cnf  	 Process: 600  	 Variables: 100  	 Clauses: 160  	 CPU time: 0.00621 s	 UNSATISFIABLE
 
-File: ../cnfs/aim-50-1_6-yes1-4.cnf 	 Process: 20115	 Variables: 50   	 Clauses: 80   	 CPU time: 0.00244 s	 SATISFIABLE
+File: ../cnfs/aim-50-1_6-yes1-4.cnf 	 Process: 600  	 Variables: 50   	 Clauses: 80   	 CPU time: 0.00000 s	 SATISFIABLE
 
-File: ../cnfs/dubois22.cnf          	 Process: 20117	 Variables: 66   	 Clauses: 176  	 CPU time: 0.00266 s	 UNSATISFIABLE
+File: ../cnfs/dubois22.cnf          	 Process: 602  	 Variables: 66   	 Clauses: 176  	 CPU time: 0.00461 s	 UNSATISFIABLE
 
-File: ../cnfs/hole6.cnf             	 Process: 20118	 Variables: 42   	 Clauses: 133  	 CPU time: 0.00768 s	 UNSATISFIABLE
+File: ../cnfs/hole6.cnf             	 Process: 603  	 Variables: 42   	 Clauses: 133  	 CPU time: 0.00638 s	 UNSATISFIABLE
 
-File: ../cnfs/simple_v3_c2.cnf      	 Process: 20115	 Variables: 3    	 Clauses: 2    	 CPU time: 0.00238 s	 SATISFIABLE
+File: ../cnfs/quinn.cnf             	 Process: 602  	 Variables: 16   	 Clauses: 18   	 CPU time: 0.00000 s	 SATISFIABLE
 
-File: ../cnfs/quinn.cnf             	 Process: 20117	 Variables: 16   	 Clauses: 18   	 CPU time: 0.00230 s	 SATISFIABLE
+File: ../cnfs/simple_v3_c2.cnf      	 Process: 600  	 Variables: 3    	 Clauses: 2    	 CPU time: 0.00416 s	 SATISFIABLE
 
-File: ../cnfs/bf0432-007.cnf        	 Process: 20116	 Variables: 1040 	 Clauses: 3369 	 CPU time: 0.00654 s	 UNSATISFIABLE
+File: ../cnfs/par8-1-c.cnf          	 Process: 603  	 Variables: 64   	 Clauses: 254  	 CPU time: 0.00535 s	 SATISFIABLE
 
-File: ../cnfs/par8-1-c.cnf          	 Process: 20118	 Variables: 64   	 Clauses: 254  	 CPU time: 0.00171 s	 SATISFIABLE
+File: ../cnfs/bf0432-007.cnf        	 Process: 601  	 Variables: 1040 	 Clauses: 3369 	 CPU time: 0.03557 s	 UNSATISFIABLE
 
-File: ../cnfs/zebra_v155_c1135.cnf  	 Process: 20115	 Variables: 155  	 Clauses: 1067 	 CPU time: 0.00400 s	 SATISFIABLE
+File: ../cnfs/zebra_v155_c1135.cnf  	 Process: 600  	 Variables: 155  	 Clauses: 1067 	 CPU time: 0.00000 s	 SATISFIABLE
 
-File: ../cnfs/dubois20.cnf          	 Process: 20116	 Variables: 60   	 Clauses: 160  	 CPU time: 0.00221 s	 UNSATISFIABLE
+File: ../cnfs/dubois20.cnf          	 Process: 601  	 Variables: 60   	 Clauses: 160  	 CPU time: 0.00364 s	 UNSATISFIABLE
 
