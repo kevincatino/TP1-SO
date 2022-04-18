@@ -77,7 +77,7 @@ void init_slaves(masterADT master)
 
         if (master->pids[i] == 0)
         {
-            // Padre
+            // Hijo
 
             int child_read_fd = master->write_pipes[i][0];
             int child_write_fd = master->read_pipes[i][1];
@@ -114,7 +114,8 @@ void init_slaves(masterADT master)
         }
     }
 
-    // Hijo
+    // Padre
+    
     int j;
     for (j = 0; j < SLAVE_COUNT; j++)
     {
