@@ -35,8 +35,10 @@ masterADT new_master(char **files, int total_tasks, char * result_path)
 
     master->sh_mem = new_sh_mem(&(master->sh_mem_key), WRITE);
 
-    if (printf("%d", master->sh_mem_key) < 0)
+    if (printf("%d\n", master->sh_mem_key) < 0)
         error_exit("Error printing shared mem id", WRITE_ERROR);
+
+    fflush(stdout);
 
     char tasks_s[BUF_SIZE] = {0};
 
