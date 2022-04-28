@@ -38,11 +38,11 @@ masterADT new_master(char **files, int total_tasks, char * result_path)
     if (printf("%d\n", master->sh_mem_key) < 0)
         error_exit("Error printing shared mem id", WRITE_ERROR);
 
-<<<<<<< HEAD
+
     fflush(stdout);
 
     char tasks_count_str[BUF_SIZE] = {0};
->>>>>>> bd3a26b84c98539e93a1064389623ebb418b437b
+
 
     if (snprintf(tasks_count_str, BUF_SIZE, "%d\n", total_tasks) < 0)
         error_exit("Error writing to string", WRITE_ERROR);
