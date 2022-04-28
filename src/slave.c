@@ -9,14 +9,14 @@
 
 #define MAX_LENGTH 256
 #define MAX_ID_LENGTH 20
-#define COMMAND  "minisat %s | grep -o -e \"Number of.*[0-9]\\+\" -e \"CPU time.*s\" -e \".*SATISFIABLE\" | tr -s \" \" | tr \"\n\" \"\t\""
+#define COMMAND  "minisat %s | grep -o -e \"Number of.*[0-9]\\+\" -e \"CPU time.*\" -e \".*SATISFIABLE\" | tr \"\\n\" \"\\t\" | tr \" \" \"\\t\" | tr -d \"\\t\""
 
 
 void get_minisat_output(char * minisat_buf, char * file_name);
 
 void write_to_stdout(char * result_buf, int length);
 
-int append_other_data(char * result_buf, char * file_buf, char * minisat_buf);
+int form_final_output(char * result_buf, char * file_buf, int variables, int clauses, double cpu_time, char * satisfiability);
 
 
 
@@ -36,7 +36,13 @@ int main(int argc, char *argv[])
         
         get_minisat_output(minisat_buf, file_name);
 
-        int length = append_other_data(result_buf, file_name, minisat_buf);
+        char satisfiability[MAX_LENGTH] = {0};
+        int variables, clauses;
+        double cpu_time;
+
+        sscanf(minisat_buf, "Numberofvariables:%dNumberofclauses:%dCPUtime:%lfs%s", &variables, &clauses, &cpu_time, satisfiability);
+
+        int length = form_final_output(result_buf, file_name, variables, clauses, cpu_time, satisfiability);
 
         write_to_stdout(result_buf, length);
 
@@ -49,8 +55,8 @@ int main(int argc, char *argv[])
     
 }
 
-int append_other_data(char * result_buf, char * file_buf, char * minisat_buf) {
-    int length = snprintf(result_buf, MAX_LENGTH, "File: %s \t Process: %d \t %s\n", file_buf, getpid(), minisat_buf);
+int form_final_output(char * result_buf, char * file_buf, int variables, int clauses, double cpu_time, char * satisfiability) {
+    int length = snprintf(result_buf, MAX_LENGTH, "File: %-30s\t Process: %-5d\t Variables: %-5d\t Clauses: %-5d\t CPU time: %-8.5lfs\t %-11s\n", file_buf, getpid(), variables, clauses, cpu_time, satisfiability);
 
     if (length < 0)
         error_exit("Error printing to string", WRITE_ERROR);

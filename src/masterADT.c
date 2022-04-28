@@ -38,14 +38,16 @@ masterADT new_master(char **files, int total_tasks, char * result_path)
     if (printf("%d\n", master->sh_mem_key) < 0)
         error_exit("Error printing shared mem id", WRITE_ERROR);
 
+<<<<<<< HEAD
     fflush(stdout);
 
-    char tasks_s[BUF_SIZE] = {0};
+    char tasks_count_str[BUF_SIZE] = {0};
+>>>>>>> bd3a26b84c98539e93a1064389623ebb418b437b
 
-    if (snprintf(tasks_s, BUF_SIZE, "%d\n", total_tasks) < 0)
+    if (snprintf(tasks_count_str, BUF_SIZE, "%d\n", total_tasks) < 0)
         error_exit("Error writing to string", WRITE_ERROR);
 
-    write_sh_mem(master->sh_mem, tasks_s); // Escribo por shared memory la cantidad total de archivos
+    write_sh_mem(master->sh_mem, tasks_count_str); // Lo primero que obtiene view por la shared mem es la cantidad total de lineas que va a leer
 
     master->result_file = fopen(result_path,"w");
 
@@ -79,7 +81,7 @@ void init_slaves(masterADT master)
 
         if (master->pids[i] == 0)
         {
-            // Child
+            // Hijo
 
             int child_read_fd = master->write_pipes[i][0];
             int child_write_fd = master->read_pipes[i][1];
@@ -116,7 +118,8 @@ void init_slaves(masterADT master)
         }
     }
 
-    // Parent
+    // Padre
+    
     int j;
     for (j = 0; j < SLAVE_COUNT; j++)
     {

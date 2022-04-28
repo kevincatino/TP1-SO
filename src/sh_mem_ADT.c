@@ -18,7 +18,7 @@
 
 #define MAX_LINES 100
 #define MAX_BUF_SIZE 256
-#define SEM_NAME "/namedSem" //Un named semaphore se identifica por un nombre de la forma "/algunnombre"
+#define SEM_NAME "/namedSem" // Un named semaphore se identifica por un nombre de la forma "/algunnombre"
 
 
 static void attach_to(sh_mem_ADT sh_mem_handler, int id);
@@ -38,8 +38,6 @@ typedef struct sh_mem_CDT
     sem_t *semaphore;
 } sh_mem_CDT;
 
-// Si el flag es READ, se toma la key del puntero para conectarse a la memoria ya creada.
-// Si el flag es WRITE, se genera una nueva key junto a la memoria, y se escribe en el puntero key.
 sh_mem_ADT new_sh_mem(int * key, int flag)
 {
     sh_mem_ADT sh_mem_handler = calloc(1, sizeof(sh_mem_CDT)); 
@@ -54,7 +52,7 @@ sh_mem_ADT new_sh_mem(int * key, int flag)
     if (sh_mem_handler->semaphore == SEM_FAILED) 
         error_exit("Error opening semaphore", SHARED_MEM_ERROR);
 
-    if (flag & WRITE)
+    if (flag & WRITE) // Como el flag es WRITE, vamos a generar una clave para la shared_mem y guardarla en key
     {
         sh_mem_handler->id = shmget(IPC_PRIVATE, sizeof(struct sh_mem_t), IPC_CREAT | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH); 
 
@@ -62,11 +60,9 @@ sh_mem_ADT new_sh_mem(int * key, int flag)
             error_exit("Error allocating shared memory", SHARED_MEM_ERROR);
 
         (*key) = sh_mem_handler->id;
-
-        
     }  
 
-    else if (flag & READ) {
+    else if (flag & READ) { // Como el flag es READ, vamos a utilizar la clave guardada en key para acceder a la shared mem creada en el master
         sh_mem_handler->id = (*key);
     }
 
@@ -81,18 +77,11 @@ static void attach_to(sh_mem_ADT sh_mem_handler, int id)
 
     if (sh_mem_handler->sh_mem == (void *)-1)
         error_exit("Error getting pointer to shared memory", SHARED_MEM_ERROR);
-
-    if (sh_mem_handler->flag & READ) // La vista lee por ende usamos el flag READ, en master se utiliza WRITE 
-        sh_mem_handler->sh_mem->curr_reading_line = 0;
-    else
-    {
-        sh_mem_handler->sh_mem->curr_writing_line = 0;
-    }
 }
 
 void write_sh_mem(sh_mem_ADT sh_mem_handler, const char *msg)
 {
-    if (sh_mem_handler->sh_mem->curr_writing_line == MAX_LINES) // Se llego al tope de lo que se puede escribir
+    if (sh_mem_handler->sh_mem->curr_writing_line == MAX_LINES)
     {
         error_exit("Out of memory", MEMORY_ERROR);
     }
@@ -107,7 +96,7 @@ void write_sh_mem(sh_mem_ADT sh_mem_handler, const char *msg)
 
 void read_sh_mem(sh_mem_ADT sh_mem_handler, char *buff)
 {
-    if (sem_wait(sh_mem_handler->semaphore) == -1) // Espera a que master pueda leer
+    if (sem_wait(sh_mem_handler->semaphore) == -1) // Garantizamos que la view siempre lea sobre una linea ya escrita por master
         error_exit("Error writing in semaphore", SEMAPHORE_ERROR);
 
     if (snprintf(buff, MAX_BUF_SIZE, "%s", sh_mem_handler->sh_mem->buff[sh_mem_handler->sh_mem->curr_reading_line++]) < 0) 
@@ -122,7 +111,7 @@ void free_sh_mem(sh_mem_ADT sh_mem_handler)
     if ((shmdt(sh_mem_handler->sh_mem) == -1))
         error_exit("Error detaching shared memory", SHARED_MEM_ERROR);
 
-    // Solo destruimos la shared mem y desanclamos el nombre del semaforo desde view
+    // Solo destruimos la shared mem y desanclamos el nombre del semaforo desde view, pero no desde master
 
     if (((sh_mem_handler->flag) & READ) && (shmctl(sh_mem_handler->id, IPC_RMID, NULL) == -1))
         error_exit("Error in destroying shared memory", SHARED_MEM_ERROR); 

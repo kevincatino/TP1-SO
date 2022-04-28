@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 
     char output[MAX_OUTPUT_LENGTH];
 
-    read_sh_mem(sh_mem, output);
+    read_sh_mem(sh_mem, output); // Lo primero que leo es la cantidad de lineas total
 
     int lines = atoi(output);
     int counter = 0;
